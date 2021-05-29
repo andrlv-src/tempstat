@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
         FILE *f;
         _Bool is_file_set = false;
-        char inp_file[100] = {1}; /* csv file, which will be read for dada */
+        char fname[100] = {1}; /* csv file, which will be read for dada */
         int arg = 0;        
 
         if (argc == 1) {
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
                 switch (arg) {
                         case 'f':
                                 is_file_set = true;
-                                strcpy(inp_file, optarg);
+                                strcpy(fname, optarg);
                                 break;
                         case 'h':
                                 print_help();
@@ -70,13 +70,8 @@ int main(int argc, char *argv[])
         }
 
         /* read file */
-        f = fopen(inp_file, "r");
-        if (f == NULL) {
-                printf("ERROR: file %s not found", inp_file);
-                exit(1);
-        }
+        read_file(f, fname);
 
-        fclose(f);
 
         /* data structure *inp_file, "r" */
 

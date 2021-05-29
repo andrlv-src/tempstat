@@ -4,6 +4,7 @@
  *      written 2021 by Andrey Lvov
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include "temp_functions.h"
 
 void print_help()
@@ -41,3 +42,13 @@ void print_version()
 
 }
 
+void read_file(FILE *f,char *fname)
+{
+        f = fopen(fname, "r");
+        if (f == NULL) {
+                printf("ERROR: file \"%s\" not found.\n", fname);
+                exit(1);
+        }
+
+        fclose(f);
+}

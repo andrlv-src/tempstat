@@ -11,5 +11,6 @@
 
 void print_help();
 void print_version();
+void read_file(FILE *f, char *fname);
 
 #endif
