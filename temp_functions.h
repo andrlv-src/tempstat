@@ -2,9 +2,10 @@
  *
  *      written 2021 by Andrey Lvov
  */
-#ifndef TEMP_FUNCTIONS_H_
-#define TEMP_FUNCTIONS_H_
+#ifndef temp_functions_h
+#define temp_functions_h
 
 void print_help();
 void print_version();
 
+#endif
