@@ -3,7 +3,7 @@
  *      "tempstat" - Temperature statistics console utility for show statistics
  *      from csv file gathered by temperature sensor.
  *
- *      written 2021 by Andrey Lvov
+ *      Written 2021 by Andrey Lvov
  */
 
 /*
@@ -14,76 +14,86 @@
 
 
 #include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include "temp_functions.h"
 
 int main(int argc, char *argv[])
 {
-        /* process args
-         *
-         *  options list
-         *
-         *  -f=filename.csv
-         *  -h help
-         *  -m=month number
-         *
-         *  additonal options
-         *
-         *  -v version
-         *  -y=year
-         *
-         *
-         *  -D delimiter . , ; : "
-         *  -M default month
-         *
-         */
 
+        FILE *f;
+        _Bool is_file_set = false;
+        char inp_file[100] = {1}; /* csv file, which will be read for dada */
         int arg = 0;        
+
+        if (argc == 1) {
+                printf("ERROR: using without arguments.\n");
+                printf("Try tempstat -h for help.\n");
+                exit(1);
+        }
+        opterr = 0;
+
         while ((arg = getopt(argc, argv, "f:hm:vy:")) != -1) {
                 switch (arg) {
                         case 'f':
-                                printf("Found arg \"f = %s\".\n", optarg);
+                                is_file_set = true;
+                                strcpy(inp_file, optarg);
                                 break;
                         case 'h':
                                 print_help();
-                                break;
-                        case 'm':
-                                printf("Found arg \"m = %s\".\n", optarg);
+                                return 0;
                                 break;
                         case 'v':
                                 print_version();
+                                return 0;
+                                break;
+                        case 'm':
+                                /* TODO check for file set because all options
+                                 follow only when file is set */
+                                printf("Found arg \"m = %s\".\n", optarg);
                                 break;
                         case 'y':
                                 printf("Found arg \"y = %s\".\n", optarg);
                                 break;
                         case '?':
+                                printf("ERROR: Wrong argument(s).\n");
                                 printf("Try tempstat -h for help.\n");
                                 exit(1);
                                 break;
                         default:
                                 printf("Error! Wrong argument! Default case exit.\n");
-                                print_help();
                                 exit(1);
                                 break;
                 }
         }
 
-        // get help
+        /* read file */
+        f = fopen(inp_file, "r");
+        if (f == NULL) {
+                printf("ERROR: file %s not found", inp_file);
+                exit(1);
+        }
 
-        // read file
+        fclose(f);
 
-        // data structure
-        
-        // parse data , TODO check csv file errors, show line __LINE__
-        
-        // out/printing
-        
-        // makefile
-        
-        // additonal func
+        /* data structure *inp_file, "r" */
 
-        // test args
+        /* parse data , TODO check csv file errors, show line __LINE__
+           processing through scanf
+           scanf("%4d;%2d;%2d;%2d;%2d;%d", &in);
+           there need to test different delimiter for additonal functionality
+        */
+
+
+        
+        /* out/printing */
+        
+        /* additonal func */
+
+        /* test args */
+
         return 0;
 }
 
