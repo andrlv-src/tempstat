@@ -1,21 +1,21 @@
-/*
-* temperature
-* Utility for show statistics from temperature sensor.
-*
-*
-*/
+/*      main.c
+ *
+ *      "tempstat" - Temperature statistics console utility for show statistics
+ *      from csv file gathered by temperature sensor.
+ *
+ *      written 2021 by Andrey Lvov
+ */
 
 /*
- * TODO
- * TODO #ifndef in h file
- * TODO Makefile
- * TODO 
+ * TODO additonal options, for example gistogram of somthing the same
+ * TODO check for run without arguments and print help
  *
  */
 
 
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "temp_functions.h"
 
 int main(int argc, char *argv[])
@@ -46,28 +46,29 @@ int main(int argc, char *argv[])
                                 printf("Found arg \"f = %s\".\n", optarg);
                                 break;
                         case 'h':
-                                printf("Found arg \"h\".\n");
-                                //print_help
+                                print_help();
                                 break;
                         case 'm':
                                 printf("Found arg \"m = %s\".\n", optarg);
                                 break;
                         case 'v':
-                                printf("Found arg \"v\".\n");
-                                //print_version
+                                print_version();
                                 break;
                         case 'y':
                                 printf("Found arg \"y = %s\".\n", optarg);
                                 break;
                         case '?':
-                                printf("Error! Wrong argument!\n");
+                                printf("Try tempstat -h for help.\n");
+                                exit(1);
                                 break;
                         default:
-                                printf("Error! Wrong argument!\n");
-                                // print_help();
+                                printf("Error! Wrong argument! Default case exit.\n");
+                                print_help();
+                                exit(1);
                                 break;
                 }
         }
+
         // get help
 
         // read file
