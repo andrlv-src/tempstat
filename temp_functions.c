@@ -12,15 +12,35 @@
 #define DATA_FORMAT "%4d;%2d;%2d;%2d;%2d;%d"
 
 enum {
-        LINES = 1000,
+        LINES = 100,
         LENGTH = 25
 };
 
-static int current_month = 1;
-static int current_day   = 0;
+static int cmonth = 0;
+static int cday   = 0;
 static int dt[4] = {0}; /* days, t sum, tmax, tmin */
 
-int flread(FILE *fp, data_s *months)
+void dbinit(data_s *tdata)
+{
+        int i = 0;
+        for (i = 0; i < NUMBER_OF_MONTHS; ++i) {
+                tdata[i].year = 2021;
+                tdata[i].month = i + 1;
+                tdata[i].days = 0;
+                tdata[i].tmax = 0;
+                tdata[i].tmin = 0;
+                tdata[i].avr_t = 0;
+                tdata[i].minutes = 0;
+                tdata[i].tsum = 0;
+        }
+}
+
+void dbset()
+{
+
+}
+
+int read_data(FILE *fp, data_s *tdata)
 {
         int dcnt = 0;     /* data count -  correct count of input items */
         int line = 0;     /* current line in file, for catch errors and log it*/
@@ -28,7 +48,6 @@ int flread(FILE *fp, data_s *months)
         int lcnt = 0;     /* error lines counter */
         int erlines[LINES] = {0}; /* array for numbers of broken lines */
         char tmpl[LENGTH] = {0};  /* keep temporary line */
-        _Bool loop = true;
 
 /*              csv file format example
                 YEAR;MONTH;DAY;HOUR;MINUTE;TEMPERATURE
@@ -40,7 +59,7 @@ int flread(FILE *fp, data_s *months)
                                                  &dtmp[3], &dtmp[4], &dtmp[5]);
                 line++;
 
-                printf("processing line: %d | line: %s", line, tmpl);
+                //printf("processing line: %d | line: %s", line, tmpl);
 
                 /* line is broken */
                 if (dcnt != 6) {
@@ -49,9 +68,7 @@ int flread(FILE *fp, data_s *months)
                 }
 
                 /* process data */
-                parse_data(dtmp, months);
-
-
+                parse_data(dtmp, tdata);
         }
 
         for (int i = 0; i < LINES; ++i) {
@@ -62,7 +79,7 @@ int flread(FILE *fp, data_s *months)
         return 1;
 }
 
-void parse_data(int *data, data_s *months)
+void parse_data(int *data, data_s *tdata)
 {
 /*      data array format:
 
@@ -75,24 +92,53 @@ void parse_data(int *data, data_s *months)
 */
 
         /* changing month */
-        if (current_month != data[1]) {
-                months[current_month].days = dt[0]; /* save amount of days */
-                months[current_month].tmax = dt[2]; /* save tmax */
-                months[current_month].tmin = dt[3]; /* save tmin */
-                months[current_month].avr_month_temp = dt[1] / dt[0];
+        if (cmonth != data[1] - 1) {
+                tdata[cmonth].year = data[0]; 
+                tdata[cmonth].month = data[1] - 1;
+                tdata[cmonth].days = dt[0]; /* save amount of days */
+                tdata[cmonth].tmax = dt[2]; /* save tmax */
+                tdata[cmonth].tmin = dt[3]; /* save tmin */
+                tdata[cmonth].avr_t = dt[1] / dt[0];
 
-                current_month = data[1];
+                cmonth = data[1] - 1;
+                cday = 0;
                 /* reset temporary data */
                 for (int i = 0; i < 4; ++i)
                         dt[i] = 0;
         }
 
-        if (current_day != data[2]) dt[0]++;   /* new day */
+        if (cday != data[2]) {
+                dt[0]++;   /* new day */
+                cday = data[2];
+        }
         if (dt[2] < data[5]) dt[2] = data[5];  /* set new highest temp */
         if (dt[3] > data[5]) dt[3] = data[5];  /* set new lowest temp  */
         dt[1] += data[5];                      /* set temperature sum  */
 }
 
+void print_data(data_s *tdata)
+{
+/*
+          typedef struct {
+                int year;
+                int month;
+                int days;
+                int tmax;
+                int tmin;
+                int avr_t;
+          }
+*/
+        printf("Test data printing\n");
+        for (int i = 0; i < NUMBER_OF_MONTHS; ++i) {
+                printf("M%d:Year %d |Month %d |days %d |tmax %d |tmin %d |avg %d\n",i+1,\
+                tdata[i].year, tdata[i].month, tdata[i].days, tdata[i].tmax,\
+                tdata[i].tmin, tdata[i].avr_t);
+
+        }
+        printf("\nErrors found: %d, lines %d\n", 1, 1);
+}
+
+/* check for arguments, if args == 1 this means what did't set any argiments */
 void argcheck(int args)
 {
         if (args == 1) {
