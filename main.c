@@ -13,11 +13,6 @@
 #include <stdlib.h>
 #include "temp_functions.h"
 
-enum {
-        MAX_FILE_NAME_LEN = 100,
-        MONTHS = 12
-};
-
 int main(int argc, char *argv[])
 {
 
@@ -25,8 +20,8 @@ int main(int argc, char *argv[])
         _Bool is_file_set = false;
         char fname[MAX_FILE_NAME_LEN] = {0};
         int arg = 0;        
-        data_s months[MONTHS];
-
+        data_s tdata[NUMBER_OF_MONTHS]; /* tdata - temperature database */
+        dbinit(tdata);
         argcheck(argc);
         opterr = 0;
         while ((arg = getopt(argc, argv, "f:hm:vy:")) != -1) {
@@ -72,8 +67,9 @@ int main(int argc, char *argv[])
                 exit(1);
         }
 
-        flread(fp, months);
+        read_data(fp, tdata);
         fclose(fp);
+        print_data(tdata);
 
 /*
         there need to test different delimiter for additonal functionality
