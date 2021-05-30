@@ -6,13 +6,6 @@
  *      Written 2021 by Andrey Lvov
  */
 
-/*
- * TODO additonal options, for example gistogram of somthing the same
- * TODO check for run without arguments and print help
- *
- */
-
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -30,7 +23,7 @@ int main(int argc, char *argv[])
 
         FILE *fp = NULL;
         _Bool is_file_set = false;
-        char fname[MAX_FILE_NAME_LEN] = {}; /* file, which will be read for dada */
+        char fname[MAX_FILE_NAME_LEN] = {0};
         int arg = 0;        
         data_s months[MONTHS];
 
@@ -53,7 +46,8 @@ int main(int argc, char *argv[])
                         break;
                 case 'm':
                         /* TODO check for file set because all options
-                           follow only when file is set */
+                           follow only when file is set
+                        */
                         printf("Found arg \"m = %s\".\n", optarg);
                         break;
                 case 'y':
@@ -78,19 +72,14 @@ int main(int argc, char *argv[])
                 exit(1);
         }
 
-        parse_data(fp, months);
-
+        flread(fp, months);
         fclose(fp);
 
-        /* parse data , TODO check csv file errors, show line __LINE__
-           processing through scanf
-           scanf("%4d;%2d;%2d;%2d;%2d;%d", &in);
-           there need to test different delimiter for additonal functionality
-        */
-        
-        /* out/printing */
-        
-        /* additonal func */
+/*
+        there need to test different delimiter for additonal functionality
+        out/printing
+        additonal func
+*/
 
         return 0;
 }
