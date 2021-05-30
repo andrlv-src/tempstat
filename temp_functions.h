@@ -2,7 +2,7 @@
  *
  *      Difinition of tempstat functions.
  *
- *      written 2021 by Andrey Lvov
+ *      Written 2021 by Andrey Lvov
  */
 
 #ifndef temp_functions_h
@@ -13,6 +13,7 @@
 typedef struct {
         int year;
         int month;
+        int days;
         int tmax;
         int tmin;
         int avr_month_temp;
@@ -22,6 +23,7 @@ void print_help();
 void print_version();
 void check_file_len();
 void argcheck(int args);
-int parse_data(FILE *f, data_s *months);
+void parse_data(int *data, data_s *months);
+int flread(FILE *f, data_s *months);
 
 #endif
