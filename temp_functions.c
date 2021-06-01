@@ -32,16 +32,16 @@ void dbinit(data_s *tdata)
                 tdata[i].tsum = 0;
 
                 switch (tdata[i].month) {
-                case 1: strcpy(tdata[i].month_name, "January"); break;
-                case 2: strcpy(tdata[i].month_name, "February"); break;
-                case 3: strcpy(tdata[i].month_name, "March"); break;
-                case 4: strcpy(tdata[i].month_name, "April"); break;
-                case 5: strcpy(tdata[i].month_name, "May"); break;
-                case 6: strcpy(tdata[i].month_name, "June"); break;
-                case 7: strcpy(tdata[i].month_name, "July"); break;
-                case 8: strcpy(tdata[i].month_name, "August"); break;
+                case 1: strcpy(tdata[i].month_name, "January");   break;
+                case 2: strcpy(tdata[i].month_name, "February");  break;
+                case 3: strcpy(tdata[i].month_name, "March");     break;
+                case 4: strcpy(tdata[i].month_name, "April");     break;
+                case 5: strcpy(tdata[i].month_name, "May");       break;
+                case 6: strcpy(tdata[i].month_name, "June");      break;
+                case 7: strcpy(tdata[i].month_name, "July");      break;
+                case 8: strcpy(tdata[i].month_name, "August");    break;
                 case 9: strcpy(tdata[i].month_name, "September"); break;
-                case 10: strcpy(tdata[i].month_name, "October"); break;
+                case 10: strcpy(tdata[i].month_name, "October");  break;
                 case 11: strcpy(tdata[i].month_name, "November"); break;
                 case 12: strcpy(tdata[i].month_name, "December"); break;
                 default: printf("ERROR: Wrong month number\n"); exit(1);
