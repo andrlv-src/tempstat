@@ -15,7 +15,6 @@
 
 int main(int argc, char *argv[])
 {
-
         FILE *fp = NULL;
         int *ld= NULL; /* lines data array pointer */
         _Bool is_file_set = false;
@@ -27,6 +26,7 @@ int main(int argc, char *argv[])
         dbinit(tdata);
         argcheck(argc);
         opterr = 0;
+
         while ((arg = getopt(argc, argv, "f:hm:ve")) != -1) {
                 switch (arg) {
                 case 'f':
@@ -58,12 +58,13 @@ int main(int argc, char *argv[])
                         break;
                 }
         }
+
         /* check for running with no args but with random entry */
         if (strcmp(fname, "") == 0 && is_file_set == false) {
                 print_error("ERROR: wrong argument(s).\n");
                 exit(1);
         }
-        /* TODO read_file() */
+
         fp = fopen(fname, "r");
         if (fp == NULL) {
                 printf("ERROR: file \"%s\" not found.\n", fname);
