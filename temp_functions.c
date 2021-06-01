@@ -14,14 +14,14 @@
 
 enum {
         LINES = 101,
-        LENGTH = 25
+        LENGTH = 50 
 };
 
 void dbinit(data_s *tdata)
 {
         int i = 0;
         for (i = 0; i < NUMBER_OF_MONTHS; ++i) {
-                //tdata[i].year = 2021;
+                //tdata[i].year = 0;
                 tdata[i].month = i + 1;
                 //tdata[i].days = 0;
                 tdata[i].t_is_set = false;
@@ -51,6 +51,15 @@ void dbinit(data_s *tdata)
 
 int *read_data(FILE *fp, data_s *tdata)
 {
+/*      pstr array format:
+
+        pstr[0] - year
+        pstr[1] - month
+        pstr[2] - day
+        pstr[3] - hour
+        pstr[4] - minute
+        pstr[5] - temperature
+*/
         int dcnt = 0;            /* data count -  correct is 6 */
         int pstr[6] = {0};       /* array for parsed string: y,m,d,h,m,t */
         int lcnt = 1;            /* error lines counter */
@@ -60,15 +69,15 @@ int *read_data(FILE *fp, data_s *tdata)
         /* read line from file fp */
         while (fgets(tmpl, LENGTH, fp)) {
                 dcnt = sscanf(tmpl, DATA_FORMAT,\
-                        &pstr[0], &pstr[1], &pstr[2],\
-                        &pstr[3], &pstr[4], &pstr[5]);
+                &pstr[0], &pstr[1], &pstr[2], &pstr[3], &pstr[4], &pstr[5]);
 
                 /* increment one line */
                 lines_data[0]++;
 
                 if (lcnt > 100 ) {
-                        print_error("ERROR: the number of line errors exceeded\
-                                        the specified limit of 100 lines\n");
+                        print_error("ERROR: the number of line errors exceeded "
+                        "the specified limit of lines (100).\n"
+                        "The file may not correspond to the required format.\n");
                         exit(1);
                 }
                 /* if line is broken, save it's number to lines_data array */
@@ -80,10 +89,11 @@ int *read_data(FILE *fp, data_s *tdata)
                 /* process parsed line, contained in pstr array */
                 process_data(pstr, tdata);
         }
- 
         /* calculate average temperature of each month and save it in
            corresponding structure */
         for (int i = 0; i < NUMBER_OF_MONTHS; ++i) {
+                /* if no entries in month skip it */
+                if (!tdata[i].t_is_set) continue;
                 tdata[i].avg_t = tdata[i].tsum / tdata[i].minutes;
         }
 
@@ -92,21 +102,12 @@ int *read_data(FILE *fp, data_s *tdata)
 
 void process_data(int *pstr, data_s *tdata)
 {
-/*      pstr array format:
-
-        pstr[0] - year
-        pstr[1] - month
-        pstr[2] - day
-        pstr[3] - hour
-        pstr[4] - minute
-        pstr[5] - temperature
-*/
         data_s *dp = NULL;
 
         /* get particular month struct */
         dp = get_month(tdata, pstr[1]);
 
-        /* chack for first temperature entry and save to both, min and max */
+        /* check for first temperature entry and save to both, min and max */
         if (!dp->t_is_set) {
                 dp->t_is_set = true;
                 dp->tmax = pstr[5];
@@ -243,7 +244,8 @@ void check_moption(char *optstr, int *moption, _Bool is_file_set)
         int opt = atoi(optstr);
 
         if (opt > 12 || opt < 1 ) {
-                print_error("ERROR: Wrong month number.\nPlease enter number in range from 1 to 12.\n");
+                print_error("ERROR: Wrong month number.\n"
+                "Please enter number in range from 1 to 12.\n");
                 exit(1);
         }
 
