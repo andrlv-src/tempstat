@@ -76,7 +76,7 @@ int *read_data(FILE *fp, data_s *tdata)
 
                 if (lcnt > LINES - 1 ) {
                         print_error("ERROR: the number of line errors exceeded "
-                        "the specified limit of lines (100).\n"
+                        "the specified limit of lines.\n"
                         "The file may not correspond to the required format.\n");
                         exit(1);
                 }
@@ -157,7 +157,7 @@ void get_year_data(data_s *tdata, int *year)
         year[3] = tsum / NUMBER_OF_MONTHS;
 }
 
-void print_data(data_s *tdata, int *mopt, int *lines_data)
+void print_data(data_s *tdata, int *mopt)
 {
         int y[4] = {0};
         int is_single_month = mopt[0];
@@ -214,11 +214,9 @@ void print_data(data_s *tdata, int *mopt, int *lines_data)
 
                 printf("----------------------------------------------------------------------\n");
         }
-
-        print_lines_data(lines_data);
 }
 
-void print_lines_data(int *lines_data)
+void print_lines_data(int *lines_data, _Bool error_log)
 {
         int i = 1;
         int errors = 0;
@@ -227,14 +225,18 @@ void print_lines_data(int *lines_data)
                 errors++;
                 i++;
         }
-        printf("Total entries read: %d\n", lines_data[0]);
-        printf("Total errors found: %d, in lines.\n", errors);
-        for (i = 1; i < errors + 1; ++i) {
-                fprintf(stderr, "line #%d\n", lines_data[i]);
-        }
+        printf("Total entries read: %d.\n", lines_data[0]);
+        printf("Total errors found: %d.\n", errors);
         if (errors > 10) {
-                printf("Too much lines contain errors, more than 10.\n"
-                "Try something like tempstat -f file 2> error.log\n");
+                printf("\nToo much lines contain errors, more than 10.\n");
+                printf("If you want to see all of them, you can use -e "
+                "to force print it on screen\n"
+                "or use redirection \"tempstat -f file 2> error.log\"\n");
+        }
+        if (error_log || errors <= 10) { 
+                for (i = 1; i < errors + 1; ++i) {
+                        fprintf(stderr, "line #%d\n", lines_data[i]);
+                }
         }
 }
 
