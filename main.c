@@ -71,12 +71,6 @@ int main(int argc, char *argv[])
         fclose(fp);
         print_data(tdata);
 
-/*
-        there need to test different delimiter for additonal functionality
-        out/printing
-        additonal func
-*/
-
         return 0;
 }
 
