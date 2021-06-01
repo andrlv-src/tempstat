@@ -13,7 +13,7 @@
 #define DATA_FORMAT "%4d;%2d;%2d;%2d;%2d;%d"
 
 enum {
-        LINES = 100,
+        LINES = 101,
         LENGTH = 25
 };
 
@@ -49,13 +49,12 @@ void dbinit(data_s *tdata)
         }
 }
 
-int read_data(FILE *fp, data_s *tdata)
+int *read_data(FILE *fp, data_s *tdata)
 {
         int dcnt = 0;            /* data count -  correct is 6 */
-        int line = 0;            /* current processing line */
         int pstr[6] = {0};       /* array for parsed string: y,m,d,h,m,t */
-        int lcnt = 0;            /* error lines counter */
-        int errors[LINES] = {0}; /* array for numbers of lines with errors */
+        int lcnt = 1;            /* error lines counter */
+        int *lines_data = calloc(LINES, sizeof(lines_data));
         char tmpl[LENGTH] = {0}; /* keep temporary line */
 
         /* read line from file fp */
@@ -63,11 +62,18 @@ int read_data(FILE *fp, data_s *tdata)
                 dcnt = sscanf(tmpl, DATA_FORMAT,\
                         &pstr[0], &pstr[1], &pstr[2],\
                         &pstr[3], &pstr[4], &pstr[5]);
-                line++;
 
-                /* if line is broken, save it's number to errors array */
+                /* increment one line */
+                lines_data[0]++;
+
+                if (lcnt > 100 ) {
+                        print_error("ERROR: the number of line errors exceeded\
+                                        the specified limit of 100 lines\n");
+                        exit(1);
+                }
+                /* if line is broken, save it's number to lines_data array */
                 if (dcnt != 6) {
-                        errors[lcnt++] = line;
+                        lines_data[lcnt++] = lines_data[0];
                         continue;
                 }
 
@@ -81,13 +87,7 @@ int read_data(FILE *fp, data_s *tdata)
                 tdata[i].avg_t = tdata[i].tsum / tdata[i].minutes;
         }
 
-        /* TODO delete DEBUG info and reazise getting of errors */
-        for (int i = 0; i < LINES; ++i) {
-                if (errors[i] != 0)
-                        printf("\nDEBUG: error line number: %d\n", errors[i]);
-        }
-
-        return 1;
+        return lines_data;
 }
 
 void process_data(int *pstr, data_s *tdata)
@@ -150,7 +150,7 @@ void get_year_data(data_s *tdata, int *year)
         year[3] = tsum / NUMBER_OF_MONTHS;
 }
 
-void print_data(data_s *tdata, int *mopt)
+void print_data(data_s *tdata, int *mopt, int *lines_data)
 {
         int y[4] = {0};
         int is_single_month = mopt[0];
@@ -171,14 +171,16 @@ void print_data(data_s *tdata, int *mopt)
                 printf(" Avg. t°: %d\n", tdata[single_month].avg_t);
                 printf("\n");        
         } else {
-                printf("Year: %d\n", year);
+                printf("Year: %d\n\n", year);
+
                 printf("Max. year t°: %d\n", tmax_year);
                 printf("Min. year t°: %d\n", tmin_year);
-                printf("Avg. year t°: %d\n", avg_t_year);
+                printf("Avg. year t°: %d\n\n", avg_t_year);
 
                 printf("----------------------------------------------------------------------\n");
 
-                printf("Detailed months report:\n");
+                printf("Detailed months report:\n\n");
+
                 printf("%-25s%-25s%-25s\n", tdata[0].month_name, tdata[1].month_name, tdata[2].month_name);
                 printf(" Max. t°: %-16dMax. t°: %-16dMax. t°: %-17d\n", tdata[0].tmax, tdata[1].tmax, tdata[2].tmax);
                 printf(" Min. t°: %-16dMin. t°: %-16dMin. t°: %-17d\n", tdata[0].tmin, tdata[1].tmin, tdata[2].tmin);
@@ -205,9 +207,25 @@ void print_data(data_s *tdata, int *mopt)
 
                 printf("----------------------------------------------------------------------\n");
         }
-        printf("Total entries read: \n");
-        printf("Total errors found: %d, in lines %d\n", 1, 1);
 
+        print_lines_data(lines_data);
+}
+
+void print_lines_data(int *lines_data)
+{
+        int i = 1;
+        int errors = 0;
+
+        while(lines_data[i] != 0 && i < LINES) {
+                errors++;
+                i++;
+        }
+        printf("Total entries read: %d\n", lines_data[0]);
+        printf("Total errors found: %d, in lines.\n", errors);
+
+        for (i = 1; i < errors + 1; ++i) {
+                printf("line #%d\n", lines_data[i]);
+        }
 }
 
 /* check for arguments, if args == 1 this means what did't set any argiments */
