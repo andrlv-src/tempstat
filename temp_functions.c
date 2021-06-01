@@ -293,13 +293,14 @@ void print_help()
  *
  */
         printf("Usage: tempstat -f [FILE]...[OPTIONS]\n");
-        // printf("  -D\tset specific argument for csv delimeter like , . " : ;\n");
         printf("  -f\t[FILE] for processing in csv format\n");
         printf("  -h\tShow this message\n");
         printf("  -v\tShow version info\n");
+
         printf("\n[OPTIONS]\n");
         printf("  -m\tDisplay particular month by enter number in range form 1 to 12\n");
-        // you can choose delimeter by -D option
+        printf("  -e\tForce to display errors if there are more than 10 errors.\n");
+
         printf("\nExamples:\n");
         printf("  tempstat -f file.csv -m 1\n");
 }
