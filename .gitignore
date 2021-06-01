@@ -4,3 +4,4 @@ a.out
 *.o
 tempstat
 testfile
+error.log
