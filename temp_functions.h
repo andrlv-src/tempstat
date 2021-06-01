@@ -18,22 +18,23 @@ enum {
 typedef struct {
         int year;
         int month;
+        char month_name[10];
         int days;
-        int tmax;
-        int tmin;
-        int avr_t;   /* average month temperature */
-        int minutes; /* amount minutes correspond to temperature */
-        int tsum;    /* sum of all temper measures. tsum / minutes = avr_t */
+        signed int tmax;
+        signed int tmin;
+        int avr_t;       /* average month temperature */
+        int minutes;     /* amount minutes correspond to temperature */
+        signed int tsum; /* sum of all temper measures. tsum / minutes = avr_t */
 } data_s;
 
 void dbinit(data_s *tdata);
-void dbset();/*TODO*/
 void print_help();
 void print_version();
 void check_file_len();
 void argcheck(int args);
 int read_data(FILE *f, data_s *tdata);
-void parse_data(int *data, data_s *tdata);
+void process_data(int *data, data_s *tdata);
 void print_data(data_s *tdata);
+data_s *get_month(data_s *tdata, int month);
 
 #endif
