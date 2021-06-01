@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
                 }
         }
 
-        /* check for running with no args but with random entry */
+        /* check for running with no args, but with random entry */
         if (strcmp(fname, "") == 0 && is_file_set == false) {
                 print_error("ERROR: wrong argument(s).\n");
                 exit(1);
