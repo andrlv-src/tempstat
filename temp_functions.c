@@ -27,7 +27,7 @@ void dbinit(data_s *tdata)
                 tdata[i].t_is_set = false;
                 tdata[i].tmax = 0;
                 tdata[i].tmin = 0;
-                tdata[i].avr_t = 0;
+                tdata[i].avg_t = 0;
                 tdata[i].minutes = 0;
                 tdata[i].tsum = 0;
 
@@ -78,7 +78,7 @@ int read_data(FILE *fp, data_s *tdata)
         /* calculate average temperature of each month and save it in
            corresponding structure */
         for (int i = 0; i < NUMBER_OF_MONTHS; ++i) {
-                tdata[i].avr_t = tdata[i].tsum / tdata[i].minutes;
+                tdata[i].avg_t = tdata[i].tsum / tdata[i].minutes;
         }
 
         /* TODO delete DEBUG info and reazise getting of errors */
@@ -116,9 +116,9 @@ void process_data(int *pstr, data_s *tdata)
         dp->minutes++;
         dp->tsum += pstr[5];
  
-        if (dp->tmax < pstr[5])
+        if (dp->tmax <= pstr[5])
                 dp->tmax = pstr[5];
-        if (dp->tmin > pstr[5])
+        if (dp->tmin >= pstr[5])
                 dp->tmin = pstr[5];
 }
 
@@ -135,42 +135,76 @@ data_s *get_month(data_s *tdata, int mn)
         return mnth;
 }
 
-void print_data(data_s *tdata, _Bool mopt)
+void get_year_data(data_s *tdata, int *year)
 {
-        int year = 2021;
+        int i =0;
+        int tsum = 0;
+        year[0] = 2021; 
+        year[1] = year[2] = tdata[0].tmax;
+
+        for (i = 0; i < NUMBER_OF_MONTHS; ++i) {
+                tsum += tdata[i].avg_t;
+                if (year[1] <= tdata[i].tmax) year[1] = tdata[i].tmax;
+                if (year[2] >= tdata[i].tmin) year[2] = tdata[i].tmin;
+        }
+        year[3] = tsum / NUMBER_OF_MONTHS;
+}
+
+void print_data(data_s *tdata, int *mopt)
+{
+        int y[4] = {0};
+        int is_single_month = mopt[0];
+        int single_month = mopt[1] - 1;
+        get_year_data(tdata, y);
+
+        int year        = y[0];
+        int tmax_year   = y[1];
+        int tmin_year   = y[2];
+        int avg_t_year  = y[3];
 
         printf("Temperature reoprt:\n");
-        printf("Year: %d\n", year);
-        printf("Max. year t°:\n");
-        printf("Min. year t°:\n");
-        printf("Avg. year t°:\n");
-        printf("----------------------------------------------------------------------\n");
-        printf("Detailed months report:\n");
-        printf("%-25s%-25s%-25s\n", tdata[0].month_name, tdata[1].month_name, tdata[2].month_name);
-        printf(" Max. t°: %-16dMax. t°: %-16dMax. t°: %-17d\n", tdata[0].tmax, tdata[1].tmax, tdata[2].tmax);
-        printf(" Min. t°: %-16dMin. t°: %-16dMin. t°: %-17d\n", tdata[0].tmin, tdata[1].tmin, tdata[2].tmin);
-        printf(" Avg. t°: %-16dAvg. t°: %-16dAvg. t°: %-17d\n", tdata[0].avr_t, tdata[1].avr_t, tdata[2].avr_t);
-        printf("\n");
 
-        printf("%-25s%-25s%-25s\n", tdata[3].month_name, tdata[4].month_name, tdata[5].month_name);
-        printf(" Max. t°: %-16dMax. t°: %-16dMax. t°: %-17d\n", tdata[3].tmax, tdata[4].tmax, tdata[5].tmax);
-        printf(" Min. t°: %-16dMin. t°: %-16dMin. t°: %-17d\n", tdata[3].tmin, tdata[4].tmin, tdata[5].tmin);
-        printf(" Avg. t°: %-16dAvg. t°: %-16dAvg. t°: %-17d\n", tdata[3].avr_t, tdata[4].avr_t, tdata[5].avr_t);
-        printf("\n");
+        if (is_single_month) {
+                printf("%-25s\n", tdata[single_month].month_name);
+                printf(" Max. t°: %d\n", tdata[single_month].tmax);
+                printf(" Min. t°: %d\n", tdata[single_month].tmin);
+                printf(" Avg. t°: %d\n", tdata[single_month].avg_t);
+                printf("\n");        
+        } else {
+                printf("Year: %d\n", year);
+                printf("Max. year t°: %d\n", tmax_year);
+                printf("Min. year t°: %d\n", tmin_year);
+                printf("Avg. year t°: %d\n", avg_t_year);
 
-        printf("%-25s%-25s%-25s\n", tdata[6].month_name, tdata[7].month_name, tdata[8].month_name);
-        printf(" Max. t°: %-16dMax. t°: %-16dMax. t°: %-17d\n", tdata[6].tmax, tdata[7].tmax, tdata[8].tmax);
-        printf(" Min. t°: %-16dMin. t°: %-16dMin. t°: %-17d\n", tdata[6].tmin, tdata[7].tmin, tdata[8].tmin);
-        printf(" Avg. t°: %-16dAvg. t°: %-16dAvg. t°: %-17d\n", tdata[6].avr_t, tdata[7].avr_t, tdata[8].avr_t);
-        printf("\n");
+                printf("----------------------------------------------------------------------\n");
 
-        printf("%-25s%-25s%-25s\n", tdata[9].month_name, tdata[10].month_name, tdata[11].month_name);
-        printf(" Max. t°: %-16dMax. t°: %-16dMax. t°: %-17d\n", tdata[9].tmax, tdata[10].tmax, tdata[11].tmax);
-        printf(" Min. t°: %-16dMin. t°: %-16dMin. t°: %-17d\n", tdata[9].tmin, tdata[10].tmin, tdata[11].tmin);
-        printf(" Avg. t°: %-16dAvg. t°: %-16dAvg. t°: %-17d\n", tdata[9].avr_t, tdata[10].avr_t, tdata[11].avr_t);
-        printf("\n");
+                printf("Detailed months report:\n");
+                printf("%-25s%-25s%-25s\n", tdata[0].month_name, tdata[1].month_name, tdata[2].month_name);
+                printf(" Max. t°: %-16dMax. t°: %-16dMax. t°: %-17d\n", tdata[0].tmax, tdata[1].tmax, tdata[2].tmax);
+                printf(" Min. t°: %-16dMin. t°: %-16dMin. t°: %-17d\n", tdata[0].tmin, tdata[1].tmin, tdata[2].tmin);
+                printf(" Avg. t°: %-16dAvg. t°: %-16dAvg. t°: %-17d\n", tdata[0].avg_t, tdata[1].avg_t, tdata[2].avg_t);
+                printf("\n");
 
-        printf("----------------------------------------------------------------------\n");
+                printf("%-25s%-25s%-25s\n", tdata[3].month_name, tdata[4].month_name, tdata[5].month_name);
+                printf(" Max. t°: %-16dMax. t°: %-16dMax. t°: %-17d\n", tdata[3].tmax, tdata[4].tmax, tdata[5].tmax);
+                printf(" Min. t°: %-16dMin. t°: %-16dMin. t°: %-17d\n", tdata[3].tmin, tdata[4].tmin, tdata[5].tmin);
+                printf(" Avg. t°: %-16dAvg. t°: %-16dAvg. t°: %-17d\n", tdata[3].avg_t, tdata[4].avg_t, tdata[5].avg_t);
+                printf("\n");
+
+                printf("%-25s%-25s%-25s\n", tdata[6].month_name, tdata[7].month_name, tdata[8].month_name);
+                printf(" Max. t°: %-16dMax. t°: %-16dMax. t°: %-17d\n", tdata[6].tmax, tdata[7].tmax, tdata[8].tmax);
+                printf(" Min. t°: %-16dMin. t°: %-16dMin. t°: %-17d\n", tdata[6].tmin, tdata[7].tmin, tdata[8].tmin);
+                printf(" Avg. t°: %-16dAvg. t°: %-16dAvg. t°: %-17d\n", tdata[6].avg_t, tdata[7].avg_t, tdata[8].avg_t);
+                printf("\n");
+
+                printf("%-25s%-25s%-25s\n", tdata[9].month_name, tdata[10].month_name, tdata[11].month_name);
+                printf(" Max. t°: %-16dMax. t°: %-16dMax. t°: %-17d\n", tdata[9].tmax, tdata[10].tmax, tdata[11].tmax);
+                printf(" Min. t°: %-16dMin. t°: %-16dMin. t°: %-17d\n", tdata[9].tmin, tdata[10].tmin, tdata[11].tmin);
+                printf(" Avg. t°: %-16dAvg. t°: %-16dAvg. t°: %-17d\n", tdata[9].avg_t, tdata[10].avg_t, tdata[11].avg_t);
+                printf("\n");
+
+                printf("----------------------------------------------------------------------\n");
+        }
         printf("Total entries read: \n");
         printf("Total errors found: %d, in lines %d\n", 1, 1);
 
@@ -182,6 +216,24 @@ void argcheck(int args)
         if (args == 1) {
                 printf("ERROR: using without arguments.\n");
                 printf("Try tempstat -h for help.\n");
+                exit(1);
+        }
+}
+
+void check_moption(char *optstr, int *moption, _Bool is_file_set)
+{
+        int opt = atoi(optstr);
+
+        if (opt > 12 || opt < 1 ) {
+                print_error("ERROR: Wrong month number.\nPlease enter number in range from 1 to 12.\n");
+                exit(1);
+        }
+
+        if (is_file_set) {
+                moption[0] = true;
+                moption[1] = opt;
+        } else {
+                print_error("ERROR: Wrong argument(s).\n");
                 exit(1);
         }
 }
@@ -215,7 +267,7 @@ void print_help()
         printf("  -h\tShow this message\n");
         printf("  -v\tShow version info\n");
         printf("\n[OPTIONS]\n");
-        printf("  -m\tDisplay particular month by using numbers from 1 to 12\n");
+        printf("  -m\tDisplay particular month by enter number in range form 1 to 12\n");
         // you can choose delimeter by -D option
         printf("\nExamples:\n");
         printf("  tempstat -f file.csv -m 1\n");
@@ -230,9 +282,9 @@ void print_version()
 
 }
 
-void print_error()
+void print_error(char *str)
 {
-        printf("ERROR: Wrong argument(s).\n");
+        printf("%s", str);
         printf("Try tempstat -h for help.\n");
 }
 
