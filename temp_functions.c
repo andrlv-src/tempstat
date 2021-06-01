@@ -16,10 +16,6 @@ enum {
         LENGTH = 25
 };
 
-static int cmonth = 0;
-static int cday   = 0;
-static int dt[4] = {0}; /* days, t sum, tmax, tmin */
-
 void dbinit(data_s *tdata)
 {
         int i = 0;
@@ -33,87 +29,93 @@ void dbinit(data_s *tdata)
                 tdata[i].minutes = 0;
                 tdata[i].tsum = 0;
         }
-}
-
-void dbset()
-{
-
+/*
+        switch (tdata[i].month) {
+                case 1: tdata[i].month_name  "January"; break;
+                case 2: tdata[i].month_name  "February"; break;
+                case 3: tdata[i].month_name  "March"; break;
+                case 4: tdata[i].month_name  "April"; break;
+                case 5: tdata[i].month_name  "May"; break;
+                case 6: tdata[i].month_name  "June"; break;
+                case 7: tdata[i].month_name  "July"; break;
+                case 8: tdata[i].month_name  "August"; break;
+                case 9: tdata[i].month_name  "September"; break;
+                case 10: tdata[i].month_name "October"; break;
+                case 11: tdata[i].month_name "November"; break;
+                case 12: tdata[i].month_name "December"; break;
+                default: printf("ERROR: Wrong month number\n"); exit(1);
+        }
+*/
 }
 
 int read_data(FILE *fp, data_s *tdata)
 {
-        int dcnt = 0;     /* data count -  correct count of input items */
-        int line = 0;     /* current line in file, for catch errors and log it*/
-        int dtmp[6] = {0};/* array for keep temporary data: y,m,d,h,m,t */
-        int lcnt = 0;     /* error lines counter */
-        int erlines[LINES] = {0}; /* array for numbers of broken lines */
-        char tmpl[LENGTH] = {0};  /* keep temporary line */
+        int dcnt = 0;            /* data count -  correct is 6 */
+        int line = 0;            /* current processing line */
+        int pstr[6] = {0};       /* array for parsed string: y,m,d,h,m,t */
+        int lcnt = 0;            /* error lines counter */
+        int errors[LINES] = {0}; /* array for numbers of lines with errors */
+        char tmpl[LENGTH] = {0}; /* keep temporary line */
 
-/*              csv file format example
-                YEAR;MONTH;DAY;HOUR;MINUTE;TEMPERATURE
-                2021;01;01;23;03;-6
-*/
-
+        /* read line from file fp */
         while (fgets(tmpl, LENGTH, fp)) {
-                dcnt = sscanf(tmpl, DATA_FORMAT, &dtmp[0], &dtmp[1], &dtmp[2],\
-                                                 &dtmp[3], &dtmp[4], &dtmp[5]);
+                dcnt = sscanf(tmpl, DATA_FORMAT,\
+                        &pstr[0], &pstr[1], &pstr[2],\
+                        &pstr[3], &pstr[4], &pstr[5]);
                 line++;
-
                 //printf("processing line: %d | line: %s", line, tmpl);
 
-                /* line is broken */
+                /* if line is broken, save it's number to errors array */
                 if (dcnt != 6) {
-                        erlines[lcnt++] = line;
+                        errors[lcnt++] = line;
                         continue;
                 }
 
-                /* process data */
-                parse_data(dtmp, tdata);
+                /* process parsed line contained in pstr array */
+                process_data(pstr, tdata); /* TODO maybe rename this fuction? */
         }
-
+        /* TODO delete DEBUG info and reazise getting of errors */
         for (int i = 0; i < LINES; ++i) {
-                if (erlines[i] != 0)
-                        printf("\nDEBUG: error line number: %d\n", erlines[i]);
+                if (errors[i] != 0)
+                        printf("\nDEBUG: error line number: %d\n", errors[i]);
         }
 
         return 1;
 }
 
-void parse_data(int *data, data_s *tdata)
+void process_data(int *pstr, data_s *tdata)
 {
-/*      data array format:
+/*      pstr array format:
 
-        data[0] - year
-        data[1] - month
-        data[2] - day
-        data[3] - hour
-        data[4] - minute
-        data[5] - temperature
+        pstr[0] - year
+        pstr[1] - month
+        pstr[2] - day
+        pstr[3] - hour
+        pstr[4] - minute
+        pstr[5] - temperature
 */
+        int i = 0;
+        data_s *dp = NULL; /* pointer to particular month */
 
-        /* changing month */
-        if (cmonth != data[1] - 1) {
-                tdata[cmonth].year = data[0]; 
-                tdata[cmonth].month = data[1] - 1;
-                tdata[cmonth].days = dt[0]; /* save amount of days */
-                tdata[cmonth].tmax = dt[2]; /* save tmax */
-                tdata[cmonth].tmin = dt[3]; /* save tmin */
-                tdata[cmonth].avr_t = dt[1] / dt[0];
-
-                cmonth = data[1] - 1;
-                cday = 0;
-                /* reset temporary data */
-                for (int i = 0; i < 4; ++i)
-                        dt[i] = 0;
+        dp = get_month(tdata, pstr[1]); /* get particular month struct */
+        dp->minutes++;
+        dp->tsum += pstr[5];
+ 
+        for (i = 0; i < NUMBER_OF_MONTHS; ++i) {
+                tdata[i].avr_t = tdata[i].tsum / tdata[i].minutes;
         }
+}
 
-        if (cday != data[2]) {
-                dt[0]++;   /* new day */
-                cday = data[2];
+data_s *get_month(data_s *tdata, int mn)
+{
+        data_s *mnth = NULL;
+        int i = 0;
+        for (i = 0; i < NUMBER_OF_MONTHS; ++i) {
+                if (tdata[i].month == mn) {
+                        mnth = &tdata[i];
+                }
         }
-        if (dt[2] < data[5]) dt[2] = data[5];  /* set new highest temp */
-        if (dt[3] > data[5]) dt[3] = data[5];  /* set new lowest temp  */
-        dt[1] += data[5];                      /* set temperature sum  */
+        return mnth;
 }
 
 void print_data(data_s *tdata)
@@ -130,9 +132,8 @@ void print_data(data_s *tdata)
 */
         printf("Test data printing\n");
         for (int i = 0; i < NUMBER_OF_MONTHS; ++i) {
-                printf("M%d:Year %d |Month %d |days %d |tmax %d |tmin %d |avg %d\n",i+1,\
-                tdata[i].year, tdata[i].month, tdata[i].days, tdata[i].tmax,\
-                tdata[i].tmin, tdata[i].avr_t);
+                printf("Month %d |minutes %d |tmax %d |tmin %d |temp sum %d |avr temp %d\n",\
+                tdata[i].month, tdata[i].minutes, tdata[i].tmax, tdata[i].tmin, tdata[i].tsum, tdata[i].tsum / tdata[i].minutes);
 
         }
         printf("\nErrors found: %d, lines %d\n", 1, 1);
