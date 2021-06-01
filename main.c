@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
 
         FILE *fp = NULL;
         _Bool is_file_set = false;
+        _Bool moption = false;
         char fname[MAX_FILE_NAME_LEN] = {0};
         int arg = 0;        
         data_s tdata[NUMBER_OF_MONTHS]; /* tdata - temperature database */
@@ -40,17 +41,19 @@ int main(int argc, char *argv[])
                         return 0;
                         break;
                 case 'm':
-                        /* TODO check for file set because all options
-                           follow only when file is set
-                        */
-                        printf("Found arg \"m = %s\".\n", optarg);
+                        /* TODO check_moption() func */
+                        if (is_file_set) {
+                                moption = true;
+                        } else {
+                                print_error();
+                                exit(1);
+                        }
                         break;
                 case 'y':
                         printf("Found arg \"y = %s\".\n", optarg);
                         break;
                 case '?':
-                        printf("ERROR: Wrong argument(s).\n");
-                        printf("Try tempstat -h for help.\n");
+                        print_error();
                         exit(1);
                         break;
                 default:
@@ -60,16 +63,15 @@ int main(int argc, char *argv[])
                 }
         }
 
-        /* read file */
+        /* TODO read_file() */
         fp = fopen(fname, "r");
         if (fp == NULL) {
                 printf("ERROR: file \"%s\" not found.\n", fname);
                 exit(1);
         }
-
         read_data(fp, tdata);
         fclose(fp);
-        print_data(tdata);
+        print_data(tdata, moption);
 
         return 0;
 }
