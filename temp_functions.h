@@ -21,6 +21,7 @@ typedef struct {
         char month_name[10];
         int days;
         int minutes;     /* amount minutes correspond to temperature */
+        _Bool t_is_set;
         signed int tmax;
         signed int tmin;
         signed int avr_t;       /* average month temperature */
