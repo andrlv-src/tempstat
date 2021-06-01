@@ -30,11 +30,12 @@ typedef struct {
 void dbinit(data_s *tdata);
 void print_help();
 void print_version();
+void print_error();
 void check_file_len();
 void argcheck(int args);
 int read_data(FILE *f, data_s *tdata);
 void process_data(int *data, data_s *tdata);
-void print_data(data_s *tdata);
+void print_data(data_s *tdata, _Bool opt);
 data_s *get_month(data_s *tdata, int month);
 
 #endif
