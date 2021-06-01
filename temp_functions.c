@@ -115,10 +115,11 @@ data_s *get_month(data_s *tdata, int mn)
                         mnth = &tdata[i];
                 }
         }
+        /* returns pointer to structure of selected month */
         return mnth;
 }
 
-void print_data(data_s *tdata)
+void print_data(data_s *tdata, _Bool mopt)
 {
 /*
           typedef struct {
@@ -193,3 +194,8 @@ void print_version()
 
 }
 
+void print_error()
+{
+        printf("ERROR: Wrong argument(s).\n");
+        printf("Try tempstat -h for help.\n");
+}
