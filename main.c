@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 
         FILE *fp = NULL;
         _Bool is_file_set = false;
-        _Bool moption = false;
+        int moption[2] = {0};
         char fname[MAX_FILE_NAME_LEN] = {0};
         int arg = 0;        
         data_s tdata[NUMBER_OF_MONTHS]; /* tdata - temperature database */
@@ -41,28 +41,26 @@ int main(int argc, char *argv[])
                         return 0;
                         break;
                 case 'm':
-                        /* TODO check_moption() func */
-                        if (is_file_set) {
-                                moption = true;
-                        } else {
-                                print_error();
-                                exit(1);
-                        }
+                        check_moption(optarg, moption, is_file_set);
                         break;
                 case 'y':
                         printf("Found arg \"y = %s\".\n", optarg);
                         break;
                 case '?':
-                        print_error();
+                        print_error("ERROR: Wrong argument(s).\n");
                         exit(1);
                         break;
                 default:
-                        printf("Error! Wrong argument! Default case exit.\n");
+                        print_error("ERROR: Wrong argument! Default exit.\n");
                         exit(1);
                         break;
                 }
         }
-
+        /* check for running with no args but with random entry */
+        if (strcmp(fname, "") == 0 && is_file_set == false) {
+                print_error("ERROR: wrong argument(s).\n");
+                exit(1);
+        }
         /* TODO read_file() */
         fp = fopen(fname, "r");
         if (fp == NULL) {
