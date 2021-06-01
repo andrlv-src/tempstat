@@ -249,7 +249,7 @@ void print_lines_data(int *lines_data, _Bool error_log)
                 printf("\nToo much lines contain errors, more than 10.\n");
                 printf("If you want to see all of them, you can use -e "
                 "to force print it on screen\n"
-                "or use redirection \"tempstat -f file 2> error.log\"\n");
+                "or use redirection \"tempstat -f file -e 2> error.log\"\n");
         }
         if (error_log || errors <= 10) { 
                 for (i = 1; i < errors + 1; ++i) {
@@ -299,13 +299,13 @@ void check_file_len(int max_flen, int flen)
 void print_help()
 {
         printf("Usage: tempstat -f [FILE]...[OPTIONS]\n");
-        printf("  -f\t[FILE] for processing in csv format\n");
-        printf("  -h\tShow this message\n");
-        printf("  -v\tShow version info\n");
+        printf("  -f\t[FILE] for processing in csv format.\n");
+        printf("  -h\tShow this message.\n");
+        printf("  -v\tShow version info.\n");
 
         printf("\n[OPTIONS]\n");
         printf("  -m\tDisplay particular month by enter "
-                        "number in range form 1 to 12\n");
+                        "number in range form 1 to 12.\n");
         printf("  -e\tForce to display errors if there "
                         "are more than 10 errors.\n");
 
