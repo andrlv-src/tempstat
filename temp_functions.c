@@ -29,23 +29,22 @@ void dbinit(data_s *tdata)
                 tdata[i].minutes = 0;
                 tdata[i].tsum = 0;
         }
-/*
+
         switch (tdata[i].month) {
-                case 1: tdata[i].month_name  "January"; break;
-                case 2: tdata[i].month_name  "February"; break;
-                case 3: tdata[i].month_name  "March"; break;
-                case 4: tdata[i].month_name  "April"; break;
-                case 5: tdata[i].month_name  "May"; break;
-                case 6: tdata[i].month_name  "June"; break;
-                case 7: tdata[i].month_name  "July"; break;
-                case 8: tdata[i].month_name  "August"; break;
-                case 9: tdata[i].month_name  "September"; break;
-                case 10: tdata[i].month_name "October"; break;
-                case 11: tdata[i].month_name "November"; break;
-                case 12: tdata[i].month_name "December"; break;
+                case 1: strcpy(tdata[i].month_name, "January"); break;
+                case 2: strcpy(tdata[i].month_name, "February"); break;
+                case 3: strcpy(tdata[i].month_name, "March"); break;
+                case 4: strcpy(tdata[i].month_name, "April"); break;
+                case 5: strcpy(tdata[i].month_name, "May"); break;
+                case 6: strcpy(tdata[i].month_name, "June"); break;
+                case 7: strcpy(tdata[i].month_name, "July"); break;
+                case 8: strcpy(tdata[i].month_name, "August"); break;
+                case 9: strcpy(tdata[i].month_name, "September"); break;
+                case 10: strcpy(tdata[i].month_name, "October"); break;
+                case 11: strcpy(tdata[i].month_name, "November"); break;
+                case 12: strcpy(tdata[i].month_name, "December"); break;
                 default: printf("ERROR: Wrong month number\n"); exit(1);
         }
-*/
 }
 
 int read_data(FILE *fp, data_s *tdata)
@@ -71,9 +70,16 @@ int read_data(FILE *fp, data_s *tdata)
                         continue;
                 }
 
-                /* process parsed line contained in pstr array */
-                process_data(pstr, tdata); /* TODO maybe rename this fuction? */
+                /* process parsed line, contained in pstr array */
+                process_data(pstr, tdata);
         }
+ 
+        /* calculate average temperature of each month and save it in
+           corresponding structure */
+        for (int i = 0; i < NUMBER_OF_MONTHS; ++i) {
+                tdata[i].avr_t = tdata[i].tsum / tdata[i].minutes;
+        }
+
         /* TODO delete DEBUG info and reazise getting of errors */
         for (int i = 0; i < LINES; ++i) {
                 if (errors[i] != 0)
@@ -94,16 +100,11 @@ void process_data(int *pstr, data_s *tdata)
         pstr[4] - minute
         pstr[5] - temperature
 */
-        int i = 0;
         data_s *dp = NULL; /* pointer to particular month */
 
         dp = get_month(tdata, pstr[1]); /* get particular month struct */
         dp->minutes++;
         dp->tsum += pstr[5];
- 
-        for (i = 0; i < NUMBER_OF_MONTHS; ++i) {
-                tdata[i].avr_t = tdata[i].tsum / tdata[i].minutes;
-        }
 }
 
 data_s *get_month(data_s *tdata, int mn)
@@ -131,7 +132,12 @@ void print_data(data_s *tdata, _Bool mopt)
                 int avr_t;
           }
 */
-        printf("Test data printing\n");
+        int year = 2021;
+
+        printf("Temperature reoprt:\n");
+        printf("Year: %d\n", year);
+        printf("----------------------------------------------------------------------\n");
+
         for (int i = 0; i < NUMBER_OF_MONTHS; ++i) {
                 printf("Month %d |minutes %d |tmax %d |tmin %d |temp sum %d |avr temp %d\n",\
                 tdata[i].month, tdata[i].minutes, tdata[i].tmax, tdata[i].tmin, tdata[i].tsum, tdata[i].tsum / tdata[i].minutes);
@@ -199,3 +205,4 @@ void print_error()
         printf("ERROR: Wrong argument(s).\n");
         printf("Try tempstat -h for help.\n");
 }
+
