@@ -25,7 +25,7 @@ typedef struct {
         signed int tmax;
         signed int tmin;
         signed int avg_t;       /* average month temperature */
-        signed int tsum; /* sum of all temper measures. tsum / minutes = avg_t */
+        signed int tsum; /* sum of all temper measures. tsum/minutes = avg_t */
 } data_s;
 
 void dbinit(data_s *tdata);

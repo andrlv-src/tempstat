@@ -52,13 +52,8 @@ void dbinit(data_s *tdata)
 int *read_data(FILE *fp, data_s *tdata)
 {
 /*      pstr array format:
-
-        pstr[0] - year
-        pstr[1] - month
-        pstr[2] - day
-        pstr[3] - hour
-        pstr[4] - minute
-        pstr[5] - temperature
+        pstr[0] - year, pstr[1] - month,  pstr[2] - day
+        pstr[3] - hour, pstr[4] - minute, pstr[5] - temperature
 */
         int cnt = 0;
         int dcnt = 0;            /* data count -  correct is 6 */
@@ -289,18 +284,6 @@ void check_file_len(int max_flen, int flen)
 
 void print_help()
 {
-/* 
- *  options list
- *
- *  -f=filename.csv
- *  -h help
- *  -m=month number
- *  -v version
- *  -y=year
- *  -D delimiter . , ; : "
- *  -M default month
- *
- */
         printf("Usage: tempstat -f [FILE]...[OPTIONS]\n");
         printf("  -f\t[FILE] for processing in csv format\n");
         printf("  -h\tShow this message\n");
@@ -320,7 +303,6 @@ void print_version()
         printf("  Copyright (C) 2021 Andrey Lvov\n");
         // printf("This is free software: you are free to change and redistribute it.\n");
         printf("  There is NO WARRANTY, to the extent permitted by law.\n");
-
 }
 
 void print_error(char *str)
