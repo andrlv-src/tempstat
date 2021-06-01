@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
 {
 
         FILE *fp = NULL;
+        int *ld= NULL; /* lines data array pointer */
         _Bool is_file_set = false;
         int moption[2] = {0};
         char fname[MAX_FILE_NAME_LEN] = {0};
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
                         break;
                 case 'y':
                         printf("Found arg \"y = %s\".\n", optarg);
+                        return 0;
                         break;
                 case '?':
                         print_error("ERROR: Wrong argument(s).\n");
@@ -67,9 +69,10 @@ int main(int argc, char *argv[])
                 printf("ERROR: file \"%s\" not found.\n", fname);
                 exit(1);
         }
-        read_data(fp, tdata);
+        ld = read_data(fp, tdata);
         fclose(fp);
-        print_data(tdata, moption);
+        print_data(tdata, moption, ld);
+        free(ld);
 
         return 0;
 }
