@@ -20,10 +20,10 @@ typedef struct {
         int month;
         char month_name[10];
         int days;
+        int minutes;     /* amount minutes correspond to temperature */
         signed int tmax;
         signed int tmin;
-        int avr_t;       /* average month temperature */
-        int minutes;     /* amount minutes correspond to temperature */
+        signed int avr_t;       /* average month temperature */
         signed int tsum; /* sum of all temper measures. tsum / minutes = avr_t */
 } data_s;
 
