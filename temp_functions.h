@@ -32,13 +32,13 @@ void dbinit(data_s *tdata);
 void print_help();
 void print_version();
 void print_error(char *str);
+void print_data(data_s *tdata, int *opt);
+void print_lines_data(int *lines_data, _Bool error_log);
 void check_file_len();
 void argcheck(int args);
 void check_moption(char *optstr, int *moption, _Bool is_file_set);
 int *read_data(FILE *f, data_s *tdata);
 void process_data(int *data, data_s *tdata);
-void print_data(data_s *tdata, int *opt, int *lines_data);
-void print_lines_data(int *lines_data);
 data_s *get_month(data_s *tdata, int month);
 void get_year_data(data_s *tdata, int *year);
 
