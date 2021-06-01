@@ -60,6 +60,7 @@ int *read_data(FILE *fp, data_s *tdata)
         pstr[4] - minute
         pstr[5] - temperature
 */
+        int cnt = 0;
         int dcnt = 0;            /* data count -  correct is 6 */
         int pstr[6] = {0};       /* array for parsed string: y,m,d,h,m,t */
         int lcnt = 1;            /* error lines counter */
@@ -80,9 +81,16 @@ int *read_data(FILE *fp, data_s *tdata)
                         "The file may not correspond to the required format.\n");
                         exit(1);
                 }
-
+                /* there is a suspicion that the file format incorrect */ 
+                if (cnt > 10) {
+                        printf("First 10 lines of file is incorrect format.\n"
+                        "There is a suspicion that the file format incorrect.\n"
+                        "Please, check your file.\n"); 
+                        exit(1);
+                }
                 /* if line is broken, save it's number to lines_data array */
                 if (dcnt != 6) {
+                        cnt++;
                         lines_data[lcnt++] = lines_data[0];
                         continue;
                 }
@@ -94,6 +102,7 @@ int *read_data(FILE *fp, data_s *tdata)
 
                 /* process parsed line, contained in pstr array */
                 process_data(pstr, tdata);
+                cnt = 0;
         }
         /* calculate average temperature of each month and save it in
            corresponding structure */
