@@ -13,7 +13,7 @@
 #define DATA_FORMAT "%4d;%2d;%2d;%2d;%2d;%d"
 
 enum {
-        LINES = 101,
+        LINES = 50001,
         LENGTH = 50 
 };
 
@@ -74,14 +74,20 @@ int *read_data(FILE *fp, data_s *tdata)
                 /* increment one line */
                 lines_data[0]++;
 
-                if (lcnt > 100 ) {
+                if (lcnt > LINES - 1 ) {
                         print_error("ERROR: the number of line errors exceeded "
                         "the specified limit of lines (100).\n"
                         "The file may not correspond to the required format.\n");
                         exit(1);
                 }
+
                 /* if line is broken, save it's number to lines_data array */
                 if (dcnt != 6) {
+                        lines_data[lcnt++] = lines_data[0];
+                        continue;
+                }
+                /* check for incorrect February days, in 2021 only 28 days */
+                if (pstr[1] == 2 && pstr[2] > 28) {
                         lines_data[lcnt++] = lines_data[0];
                         continue;
                 }
@@ -223,9 +229,12 @@ void print_lines_data(int *lines_data)
         }
         printf("Total entries read: %d\n", lines_data[0]);
         printf("Total errors found: %d, in lines.\n", errors);
-
         for (i = 1; i < errors + 1; ++i) {
-                printf("line #%d\n", lines_data[i]);
+                fprintf(stderr, "line #%d\n", lines_data[i]);
+        }
+        if (errors > 10) {
+                printf("Too much lines contain errors, more than 10.\n"
+                "Try something like tempstat -f file 2> error.log\n");
         }
 }
 
