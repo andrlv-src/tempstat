@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
         FILE *fp = NULL;
         int *ld= NULL; /* lines data array pointer */
         _Bool is_file_set = false;
+        _Bool error_log = false;
         int moption[2] = {0};
         char fname[MAX_FILE_NAME_LEN] = {0};
         int arg = 0;        
@@ -26,7 +27,7 @@ int main(int argc, char *argv[])
         dbinit(tdata);
         argcheck(argc);
         opterr = 0;
-        while ((arg = getopt(argc, argv, "f:hm:vy:")) != -1) {
+        while ((arg = getopt(argc, argv, "f:hm:ve")) != -1) {
                 switch (arg) {
                 case 'f':
                         is_file_set = true;
@@ -44,9 +45,8 @@ int main(int argc, char *argv[])
                 case 'm':
                         check_moption(optarg, moption, is_file_set);
                         break;
-                case 'y':
-                        printf("Found arg \"y = %s\".\n", optarg);
-                        return 0;
+                case 'e':
+                        error_log = true;
                         break;
                 case '?':
                         print_error("ERROR: Wrong argument(s).\n");
@@ -71,7 +71,8 @@ int main(int argc, char *argv[])
         }
         ld = read_data(fp, tdata);
         fclose(fp);
-        print_data(tdata, moption, ld);
+        print_data(tdata, moption);
+        print_lines_data(ld, error_log);
         free(ld);
 
         return 0;
