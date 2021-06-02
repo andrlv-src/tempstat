@@ -11,6 +11,7 @@
 #include "temp_functions.h"
 
 #define DATA_FORMAT "%4d;%2d;%2d;%2d;%2d;%d"
+#define FEB 1
 
 enum {
         LINES = 50001,
@@ -89,6 +90,7 @@ int *read_data(FILE *fp, data_s *tdata)
                         lines_data[lcnt++] = lines_data[0];
                         continue;
                 }
+#if FEB
                 /* check for incorrect February days, in 2021 only 28 days */
                 if (pstr[1] == 2 && pstr[2] > 28) {
                         lines_data[lcnt++] = lines_data[0];
@@ -97,6 +99,7 @@ int *read_data(FILE *fp, data_s *tdata)
                 /* process parsed line, contained in pstr array */
                 process_data(pstr, tdata);
                 cnt = 0;
+#endif
         }
         /* calculate average temperature of each month and save it in
            corresponding structure */
