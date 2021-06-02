@@ -311,12 +311,13 @@ void print_help()
 
         printf("\nExamples:\n");
         printf("  tempstat -f file.csv -m 1\n");
+        printf("  tempstat -f file -e 2> error.log\n");
 }
 
 void print_version()
 {
         printf("tempstat version %s\n", VERSION);
-        printf("  Copyright (C) 2021 Andrey Lvov\n");
+        printf("  Copyright (C) 2021 Andrey Lvov. =D\n");
 /* printf(
    "This is free software: you are free to change and redistribute it.\n");*/
         printf("  There is NO WARRANTY, to the extent permitted by law.\n");
