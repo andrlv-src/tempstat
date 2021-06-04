@@ -96,10 +96,10 @@ int *read_data(FILE *fp, data_s *tdata)
                         lines_data[lcnt++] = lines_data[0];
                         continue;
                 }
+#endif
                 /* process parsed line, contained in pstr array */
                 process_data(pstr, tdata);
                 cnt = 0;
-#endif
         }
         /* calculate average temperature of each month and save it in
            corresponding structure */
