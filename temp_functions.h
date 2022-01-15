@@ -15,7 +15,7 @@ enum {
         NUMBER_OF_MONTHS = 12
 };
 
-typedef struct {
+typedef struct entry_data_s {
         int year;
         int month;
         char month_name[10];

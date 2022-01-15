@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         _Bool error_log = false;
         int moption[2] = {0};
         char fname[MAX_FILE_NAME_LEN] = {0};
-        int arg = 0;        
+        int arg = 0;
         data_s tdata[NUMBER_OF_MONTHS]; /* tdata - temperature database */
         dbinit(tdata);
         argcheck(argc);
